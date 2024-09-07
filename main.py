@@ -23,8 +23,9 @@ isFullHd = pyautogui.size().height == 1080
 # Координаты области экрана для сканирования (x, y, ширина, высота)
 scan_region = (1253, 360, 110, 300) if isFullHd else (975, 229, 110, 350)  # Пример координат
 okRegion = (862, 530, 200, 200) if isFullHd else (590, 387, 200, 200)  # (x, y, width, height)
-updateButtonCords = (1333, 350) if isFullHd else (1060,180)
+updateButtonCords = (1333, 340) if isFullHd else (1060,180)
 scrollCords = (1385, 433) if isFullHd else (1110,248)
+successCheckCords = (787,478,120,40) if isFullHd else (512,330,120,40)
 
 
 def capture_screen(region):
@@ -221,6 +222,14 @@ def main(counter):
 
                 pyautogui.click(updateButtonCords)
                 time.sleep(0.1)
+            else:
+                isSucessBuy = check_image_on_screen('./successBuy.png',region=successCheckCords)
+                if isSucessBuy:
+                    if lot not in counter:
+                        counter[lot] = 1
+                    else:
+                        counter[lot] += 1
+                
 
 if __name__ == "__main__":
     main(counter=session_buy)
