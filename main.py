@@ -8,11 +8,13 @@ import time
 # Укажите путь к Tesseract, если он не добавлен в PATH
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 session_buy = {}
+isFullHd = pyautogui.size().height == 1080
 # Координаты области экрана для сканирования (x, y, ширина, высота)
-scan_region = (1253, 360, 110, 300)  # Пример координат
+scan_region = (1253, 360, 110, 300) if isFullHd else (975, 229, 110, 350)  # Пример координат
+okRegion = (862, 530, 200, 200) if isFullHd else (590, 387, 200, 200)  # (x, y, width, height)
 threshold_price = 26000  # Пороговая цена для покупки
 updateButtonCords = (1333, 350)
-image_path = './ok.png'
+scrollCords = (1385, 433) if isFullHd else (1110,248)
 
 def capture_screen(region):
     screenshot = pyautogui.screenshot(region=region)
@@ -134,15 +136,15 @@ def main(counter):
             screenshot = capture_screen(scan_region)
             lots_info = find_and_recognize_lots(screenshot)
             lots = transformLots(lots_info)
-            region = (862, 530, 200, 200)  # (x, y, width, height)
+
             lot_coordinates = find_lots_coordinates(screenshot)
 
             print(f"Найдено лотов: {len(lots)}")
-            isOkOnScreen = check_image_on_screen(image_path, region)
+            isOkOnScreen = check_image_on_screen('./ok.png', okRegion)
             if not isOkOnScreen:
                 if len(lots) <= 1:  # Если найдено 1 или меньше лотов
                     # Перемещаем мышь в указанные координаты
-                    pyautogui.moveTo(1385, 433)
+                    pyautogui.moveTo(scrollCords)
                     time.sleep(0.1)  # Небольшая задержка
                     # Прокручиваем страницу вниз
                     pyautogui.scroll(-300)  # Прокрутка вниз на 300 пикселей
