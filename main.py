@@ -72,7 +72,7 @@ def find_lots_coordinates(image):
     return lot_coordinates
 
 
-def check_image_on_screen(image_path, region=None, need_to_click=True):
+def check_image_on_screen(image_path, region=None, need_to_click=True, callback=None):
     # Захват экрана
     screenshot = pyautogui.screenshot(region=region)  # Указываем область
     screenshot = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
@@ -100,9 +100,12 @@ def check_image_on_screen(image_path, region=None, need_to_click=True):
             # Нажимаем на центр изображения
             if need_to_click:
                 pyautogui.click(center_x, center_y)  # Клик по центру изображения
+            if callback is not None:
+                callback = (center_x, center_y)
             return True
 
     return False
+
 
 
 def open_pda(product:str):
@@ -113,7 +116,7 @@ def open_pda(product:str):
         time.sleep(2)
         keyboard.write(text=product)
         time.sleep(0.5)
-        check_image_on_screen('search.png', need_to_click=True)
+        check_image_on_screen('search.png', need_to_click=True,callback=(updateButtonCords))
         time.sleep(0.5)
         check_image_on_screen('filter_button.png', need_to_click=True)
         time.sleep(1)
@@ -165,7 +168,6 @@ def main(counter):
             connect_to_server(do_login=True)
             time.sleep(10)
         else:
-            check_image_on_screen('search.png', need_to_click=True)
             if keyboard.is_pressed('f7'):
                 print(f"Скрипт остановлен. ")
                 calcProfit(session_buy, sell_price)
@@ -194,8 +196,9 @@ def main(counter):
                     # Сортируем координаты по y
                     sorted_coordinates = sorted(lot_coordinates, key=lambda coord: coord[1])
 
+
+
                     for index, lot in enumerate(lots):
-                        print(lot)
                         if lot <= threshold_price and lot > minBuyPrice:
                             x, y, w, h = sorted_coordinates[0]  # Кликаем на лот с наименьшей y
                             click_x = x + scan_region[0] + w // 2
