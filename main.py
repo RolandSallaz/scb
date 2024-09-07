@@ -23,7 +23,7 @@ isFullHd = pyautogui.size().height == 1080
 # Координаты области экрана для сканирования (x, y, ширина, высота)
 scan_region = (1253, 360, 110, 300) if isFullHd else (975, 229, 110, 350)  # Пример координат
 okRegion = (862, 530, 200, 200) if isFullHd else (590, 387, 200, 200)  # (x, y, width, height)
-updateButtonCords = (1333, 350) if isFullHd else (1060,180)
+updateButtonCords = (1333, 340) if isFullHd else (1060,180)
 scrollCords = (1385, 433) if isFullHd else (1110,248)
 
 
