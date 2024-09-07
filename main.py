@@ -215,7 +215,7 @@ def main(counter):
                             time.sleep(0.1)
                             pyautogui.click(click_x, second_click_y)
                             time.sleep(0.1)
-                            if check_image_on_screen('success_buy.png', need_to_click=False,region=successCheckCords):
+                            if check_image_on_screen('successBuy.png', need_to_click=False,region=successCheckCords):
                                 if lot not in counter:
                                     counter[lot] = 1
                                 else:
