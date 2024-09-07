@@ -7,7 +7,7 @@ import keyboard
 import time
 # Укажите путь к Tesseract, если он не добавлен в PATH
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-
+session_buy = {}
 # Координаты области экрана для сканирования (x, y, ширина, высота)
 scan_region = (1253, 360, 110, 300)  # Пример координат
 threshold_price = 26000  # Пороговая цена для покупки
@@ -88,27 +88,49 @@ def check_image_on_screen(image_path, region=None, need_to_click=True):
                 pyautogui.click(center_x, center_y)  # Клик по центру изображения
             return True
 
-    print('Изображение не найдено.')
     return False
 
-def main():
+
+def open_pda(product:str):
+    keyboard.send('p')
+    time.sleep(1)
+    if check_image_on_screen('input_search.png', need_to_click=True):
+        pyautogui.click()
+        time.sleep(2)
+        keyboard.write(text=product)
+        time.sleep(0.5)
+        check_image_on_screen('search.png', need_to_click=True)
+        time.sleep(0.5)
+        check_image_on_screen('filter_button.png', need_to_click=True)
+        time.sleep(0.5)
+        check_image_on_screen('filter_button.png', need_to_click=True)
+        time.sleep(0.5)
+
+def connect_to_server(do_login=False):
+    if do_login:
+        check_image_on_screen('login_button.png')
+    else:
+        pass
+
+
+def main(counter):
     while True:
-        if check_image_on_screen('disconnect_error.png', need_to_click=False):
+        product = 'Нестабиль'
+        print(f'На текущий момент совершено: {len(counter)} покупок!\nСтатистика - {counter}')
+        if check_image_on_screen('disconnect_error.png', need_to_click=False) or \
+                check_image_on_screen('relog_1.png', need_to_click=False):
             keyboard.send('escape')
             time.sleep(5)
-            do_login = check_image_on_screen('login_button.png', need_to_click=True)
-
-            if do_login:
-                time.sleep(15)
-                keyboard.send('p')
-            else:
-                quit()
+            connect_to_server(do_login=True)
+        elif check_image_on_screen('login_button.png', need_to_click=False):
+            connect_to_server(do_login=True)
+            time.sleep(10)
         else:
-
-            if keyboard.is_pressed('f2'):
+            if keyboard.is_pressed('f7'):
                 print("Скрипт остановлен.")
                 break
-
+            if check_image_on_screen('auction_type_2.png', need_to_click=False) is False:
+                open_pda(product=product)
             screenshot = capture_screen(scan_region)
             lots_info = find_and_recognize_lots(screenshot)
             lots = transformLots(lots_info)
@@ -146,6 +168,10 @@ def main():
                             # Второй клик на покупку
                             second_click_y = click_y + 35
                             print(f'Второй клик на координатах ({click_x + 10}, {second_click_y})')
+                            if lot not in counter:
+                                counter[lot] = 1
+                            else:
+                                counter[lot] += 1
                             pyautogui.moveTo(click_x, second_click_y,0.1)
                             time.sleep(0.1)
                             pyautogui.click(click_x, second_click_y)
@@ -158,4 +184,4 @@ def main():
                 time.sleep(0.1)
 
 if __name__ == "__main__":
-    main()
+    main(counter=session_buy)
