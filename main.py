@@ -14,9 +14,10 @@ load_dotenv()
 # Укажите путь к Tesseract, если он не добавлен в PATH
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 session_buy = {}
-threshold_price = os.getenv('PRICE')  # Пороговая цена для покупки
-sell_price = os.getenv('SELL_PRICE') 
+threshold_price = int(os.getenv('PRICE'))  # Пороговая цена для покупки
+sell_price = int(os.getenv('SELL_PRICE'))
 product = os.getenv('ITEM')
+minBuyPrice = 19000
 
 isFullHd = pyautogui.size().height == 1080
 # Координаты области экрана для сканирования (x, y, ширина, высота)
@@ -190,7 +191,8 @@ def main(counter):
                     sorted_coordinates = sorted(lot_coordinates, key=lambda coord: coord[1])
 
                     for index, lot in enumerate(lots):
-                        if lot <= threshold_price and lot > 20000:
+                        print(lot)
+                        if lot <= threshold_price and lot > minBuyPrice:
                             x, y, w, h = sorted_coordinates[0]  # Кликаем на лот с наименьшей y
                             click_x = x + scan_region[0] + w // 2
                             click_y = y + scan_region[1] + h // 2
