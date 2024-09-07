@@ -72,7 +72,7 @@ def find_lots_coordinates(image):
     return lot_coordinates
 
 
-def check_image_on_screen(image_path, region=None, need_to_click=True):
+def check_image_on_screen(image_path, region=None, need_to_click=True, callback=None):
     # Захват экрана
     screenshot = pyautogui.screenshot(region=region)  # Указываем область
     screenshot = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
@@ -100,9 +100,12 @@ def check_image_on_screen(image_path, region=None, need_to_click=True):
             # Нажимаем на центр изображения
             if need_to_click:
                 pyautogui.click(center_x, center_y)  # Клик по центру изображения
+            if callback is not None:
+                callback = (center_x, center_y)
             return True
 
     return False
+
 
 
 def open_pda(product:str):
@@ -113,7 +116,7 @@ def open_pda(product:str):
         time.sleep(2)
         keyboard.write(text=product)
         time.sleep(0.5)
-        check_image_on_screen('search.png', need_to_click=True)
+        check_image_on_screen('search.png', need_to_click=True,callback=(updateButtonCords))
         time.sleep(0.5)
         check_image_on_screen('filter_button.png', need_to_click=True)
         time.sleep(1)
@@ -191,8 +194,9 @@ def main(counter):
                     # Сортируем координаты по y
                     sorted_coordinates = sorted(lot_coordinates, key=lambda coord: coord[1])
 
+
+
                     for index, lot in enumerate(lots):
-                        print(lot)
                         if lot <= threshold_price and lot > minBuyPrice:
                             x, y, w, h = sorted_coordinates[0]  # Кликаем на лот с наименьшей y
                             click_x = x + scan_region[0] + w // 2
@@ -211,7 +215,7 @@ def main(counter):
                             time.sleep(0.1)
                             pyautogui.click(click_x, second_click_y)
                             time.sleep(0.1)
-                            if check_image_on_screen('success_buy.png', need_to_click=False):
+                            if check_image_on_screen('success_buy.png', need_to_click=False,region=successCheckCords):
                                 if lot not in counter:
                                     counter[lot] = 1
                                 else:
@@ -220,15 +224,8 @@ def main(counter):
                 else:
                     print('Координаты не найдены для данного лота')
 
-                pyautogui.click(updateButtonCords)
+                check_image_on_screen('search.png', need_to_click=True)
                 time.sleep(0.1)
-            else:
-                isSucessBuy = check_image_on_screen('./successBuy.png',region=successCheckCords)
-                if isSucessBuy:
-                    if lot not in counter:
-                        counter[lot] = 1
-                    else:
-                        counter[lot] += 1
                 
 
 if __name__ == "__main__":
