@@ -7,7 +7,8 @@ import keyboard
 import time
 from dotenv import load_dotenv
 import os
-
+from datetime import datetime
+import pygetwindow as gw
 # Загрузка переменных из .env файла
 load_dotenv()
 
@@ -26,6 +27,18 @@ okRegion = (862, 530, 200, 200) if isFullHd else (590, 387, 200, 200)  # (x, y, 
 updateButtonCords = (1333, 340) if isFullHd else (1060,180)
 scrollCords = (1385, 433) if isFullHd else (1110,248)
 successCheckCords = (787,478,120,40) if isFullHd else (512,330,120,40)
+window_title = "STALCRAFT"
+windows = gw.getWindowsWithTitle(window_title)
+start_time = datetime.now()
+
+if windows:
+    # Выбираем первое найденное окно
+    window = windows[0]
+    
+    # Разворачиваем и активируем окно
+    window.activate()  # Активировать окно
+else:
+    print("Окно не найдено.")
 
 
 def capture_screen(region):
@@ -96,12 +109,13 @@ def check_image_on_screen(image_path, region=None, need_to_click=True, callback=
             if region:
                 center_x += region[0]
                 center_y += region[1]
-            print(f'Найдено изображение в координатах: ({center_x}, {center_y})')
+            # print(f'Найдено изображение {image_path} в координатах: ({center_x}, {center_y})')
             # Нажимаем на центр изображения
             if need_to_click:
                 pyautogui.click(center_x, center_y)  # Клик по центру изображения
             if callback is not None:
-                callback = (center_x, center_y)
+                global updateButtonCords
+                updateButtonCords = (center_x, center_y)
             return True
 
     return False
@@ -116,7 +130,7 @@ def open_pda(product:str):
         time.sleep(2)
         keyboard.write(text=product)
         time.sleep(0.5)
-        check_image_on_screen('search.png', need_to_click=True,callback=(updateButtonCords))
+        check_image_on_screen('search.png', need_to_click=True,callback=True)
         time.sleep(0.5)
         check_image_on_screen('filter_button.png', need_to_click=True)
         time.sleep(1)
@@ -147,15 +161,24 @@ def calcProfit(session_buy, sell_price):
     # Профит в процентах
     profit_percentage = ((sell_price - average_buy_price) / average_buy_price) * 100 if average_buy_price > 0 else 0
 
+    end_time = datetime.now()
+    elapsed_time = (end_time - start_time).total_seconds() / 3600  # Время в часах
+
+    # Скорость покупки
+    purchase_speed = total_quantity / elapsed_time if elapsed_time > 0 else 0
+
+
     # Вывод результатов
     print(f"Суммарная затрата: {total_cost}")
     print(f"Суммарная выручка: {total_revenue}")
     print(f"Профит в %: {profit_percentage:.2f}%")
     print(f"Средняя цена закупок: {average_buy_price:.2f}")
+    print(f"Скорость покупок в час: {round(purchase_speed)}")
 
 
 def main(counter):
     just_counter = 0
+    check_image_on_screen('search.png', need_to_click=True,callback=True)
     while True:
         current_price = 0
         print(f'На текущий момент совершено: {sum(counter.values())} покупок! (Попыток купить - {just_counter}\nСтатистика - {counter}')
@@ -203,16 +226,16 @@ def main(counter):
                             x, y, w, h = sorted_coordinates[0]  # Кликаем на лот с наименьшей y
                             click_x = x + scan_region[0] + w // 2
                             click_y = y + scan_region[1] + h // 2
-                            print(f"Найден лот с ценой {lot}")
-                            # Первый клик на лот
-                            print(f'Клик на лот: {lot} по координатам ({click_x}, {click_y})')
+                            # print(f"Найден лот с ценой {lot}")
+                            # # Первый клик на лот
+                            # print(f'Клик на лот: {lot} по координатам ({click_x}, {click_y})')
                             pyautogui.moveTo(click_x, click_y,0.1)
                             time.sleep(0.1)
                             pyautogui.click(click_x, click_y)
                             time.sleep(0.1)
                             # Второй клик на покупку
                             second_click_y = click_y + 35
-                            print(f'Второй клик на координатах ({click_x + 10}, {second_click_y})')
+                            # print(f'Второй клик на координатах ({click_x + 10}, {second_click_y})')
                             pyautogui.moveTo(click_x, second_click_y,0.1)
                             time.sleep(0.1)
                             pyautogui.click(click_x, second_click_y)
@@ -222,7 +245,9 @@ def main(counter):
                 else:
                     print('Координаты не найдены для данного лота')
 
-                check_image_on_screen('search.png', need_to_click=True)
+                pyautogui.moveTo(updateButtonCords)
+                time.sleep(0.1)
+                pyautogui.click(updateButtonCords)
                 time.sleep(0.1)
                 if check_image_on_screen('success_buy.png', need_to_click=False):
                     if current_price not in counter:
