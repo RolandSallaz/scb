@@ -5,17 +5,26 @@ import numpy as np
 import re
 import keyboard
 import time
+from dotenv import load_dotenv
+import os
+
+# Загрузка переменных из .env файла
+load_dotenv()
+
 # Укажите путь к Tesseract, если он не добавлен в PATH
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 session_buy = {}
-threshold_price = 27000  # Пороговая цена для покупки
+threshold_price = os.getenv('PRICE')  # Пороговая цена для покупки
+sell_price = os.getenv('SELL_PRICE') 
+product = os.getenv('ITEM')
 
 isFullHd = pyautogui.size().height == 1080
 # Координаты области экрана для сканирования (x, y, ширина, высота)
 scan_region = (1253, 360, 110, 300) if isFullHd else (975, 229, 110, 350)  # Пример координат
 okRegion = (862, 530, 200, 200) if isFullHd else (590, 387, 200, 200)  # (x, y, width, height)
-updateButtonCords = (1333, 330) if isFullHd else (1060,180)
+updateButtonCords = (1333, 350) if isFullHd else (1060,180)
 scrollCords = (1385, 433) if isFullHd else (1110,248)
+
 
 def capture_screen(region):
     screenshot = pyautogui.screenshot(region=region)
@@ -105,7 +114,7 @@ def open_pda(product:str):
         check_image_on_screen('search.png', need_to_click=True)
         time.sleep(0.5)
         check_image_on_screen('filter_button.png', need_to_click=True)
-        time.sleep(0.5)
+        time.sleep(1)
         check_image_on_screen('filter_button.png', need_to_click=True)
         time.sleep(0.5)
 
@@ -115,10 +124,33 @@ def connect_to_server(do_login=False):
     else:
         pass
 
+def calcProfit(session_buy, sell_price):
+    total_cost = 0  # Суммарная затрата
+    total_quantity = 0  # Общее количество товаров
+
+    # Проход по всем покупкам
+    for buy_price, quantity in session_buy.items():
+        total_cost += buy_price * quantity  # Увеличение затрат на сумму покупки
+        total_quantity += quantity  # Увеличение общего количества товаров
+
+    # Суммарная выручка при продаже по sell_price
+    total_revenue = total_quantity * sell_price
+
+    # Средняя цена закупок
+    average_buy_price = total_cost / total_quantity if total_quantity > 0 else 0
+
+    # Профит в процентах
+    profit_percentage = ((sell_price - average_buy_price) / average_buy_price) * 100 if average_buy_price > 0 else 0
+
+    # Вывод результатов
+    print(f"Суммарная затрата: {total_cost}")
+    print(f"Суммарная выручка: {total_revenue}")
+    print(f"Профит в %: {profit_percentage:.2f}%")
+    print(f"Средняя цена закупок: {average_buy_price:.2f}")
+
 
 def main(counter):
     while True:
-        product = 'Нестабиль'
         print(f'На текущий момент совершено: {len(counter)} покупок!\nСтатистика - {counter}')
         if check_image_on_screen('disconnect_error.png', need_to_click=False) or \
                 check_image_on_screen('relog_1.png', need_to_click=False):
@@ -130,7 +162,8 @@ def main(counter):
             time.sleep(10)
         else:
             if keyboard.is_pressed('f7'):
-                print("Скрипт остановлен.")
+                print(f"Скрипт остановлен. ")
+                calcProfit(session_buy, sell_price)
                 break
             if check_image_on_screen('auction_type_2.png', need_to_click=False) is False:
                 open_pda(product=product)
