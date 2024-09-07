@@ -23,8 +23,9 @@ isFullHd = pyautogui.size().height == 1080
 # Координаты области экрана для сканирования (x, y, ширина, высота)
 scan_region = (1253, 360, 110, 300) if isFullHd else (975, 229, 110, 350)  # Пример координат
 okRegion = (862, 530, 200, 200) if isFullHd else (590, 387, 200, 200)  # (x, y, width, height)
-updateButtonCords = (1333, 350) if isFullHd else (1060,180)
+updateButtonCords = (1333, 340) if isFullHd else (1060,180)
 scrollCords = (1385, 433) if isFullHd else (1110,248)
+successCheckCords = (787,478,120,40) if isFullHd else (512,330,120,40)
 
 
 def capture_screen(region):
@@ -151,8 +152,10 @@ def calcProfit(session_buy, sell_price):
 
 
 def main(counter):
+    just_counter = 0
     while True:
-        print(f'На текущий момент совершено: {len(counter)} покупок!\nСтатистика - {counter}')
+        current_price = 0
+        print(f'На текущий момент совершено: {sum(counter.values())} покупок! (Попыток купить - {just_counter}\nСтатистика - {counter}')
         if check_image_on_screen('disconnect_error.png', need_to_click=False) or \
                 check_image_on_screen('relog_1.png', need_to_click=False):
             keyboard.send('escape')
@@ -162,6 +165,7 @@ def main(counter):
             connect_to_server(do_login=True)
             time.sleep(10)
         else:
+            check_image_on_screen('search.png', need_to_click=True)
             if keyboard.is_pressed('f7'):
                 print(f"Скрипт остановлен. ")
                 calcProfit(session_buy, sell_price)
@@ -200,7 +204,7 @@ def main(counter):
                             # Первый клик на лот
                             print(f'Клик на лот: {lot} по координатам ({click_x}, {click_y})')
                             pyautogui.moveTo(click_x, click_y,0.1)
-                            time.sleep(0.2)
+                            time.sleep(0.1)
                             pyautogui.click(click_x, click_y)
                             time.sleep(0.1)
                             # Второй клик на покупку
@@ -209,18 +213,23 @@ def main(counter):
                             pyautogui.moveTo(click_x, second_click_y,0.1)
                             time.sleep(0.1)
                             pyautogui.click(click_x, second_click_y)
-                            time.sleep(0.1)
-                            if check_image_on_screen('success_buy.png', need_to_click=False):
-                                if lot not in counter:
-                                    counter[lot] = 1
-                                else:
-                                    counter[lot] += 1
+                            just_counter += 1
+                            current_price = lot
                             break
                 else:
                     print('Координаты не найдены для данного лота')
 
-                pyautogui.click(updateButtonCords)
+                check_image_on_screen('search.png', need_to_click=True)
                 time.sleep(0.1)
+                if check_image_on_screen('success_buy.png', need_to_click=False):
+                    if current_price not in counter:
+                        counter[current_price] = 1
+                    else:
+                        counter[current_price] += 1
+                    keyboard.send('escape')
+                elif check_image_on_screen('error_buy.png', need_to_click=False):
+                    keyboard.send('escape')
+                
 
 if __name__ == "__main__":
     main(counter=session_buy)
