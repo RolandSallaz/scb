@@ -38,7 +38,7 @@ def find_and_recognize_lots(image):
 
     custom_config = r'--oem 3 --psm 6'
     text = pytesseract.image_to_string(thresh, config=custom_config)
-    
+
     return text
 
 def transformLots(lots_info):
@@ -206,14 +206,15 @@ def main(counter):
                             # Второй клик на покупку
                             second_click_y = click_y + 35
                             print(f'Второй клик на координатах ({click_x + 10}, {second_click_y})')
-                            if lot not in counter:
-                                counter[lot] = 1
-                            else:
-                                counter[lot] += 1
                             pyautogui.moveTo(click_x, second_click_y,0.1)
                             time.sleep(0.1)
                             pyautogui.click(click_x, second_click_y)
                             time.sleep(0.1)
+                            if check_image_on_screen('success_buy.png', need_to_click=False):
+                                if lot not in counter:
+                                    counter[lot] = 1
+                                else:
+                                    counter[lot] += 1
                             break
                 else:
                     print('Координаты не найдены для данного лота')
