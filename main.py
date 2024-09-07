@@ -25,6 +25,7 @@ scan_region = (1253, 360, 110, 300) if isFullHd else (975, 229, 110, 350)  # П�
 okRegion = (862, 530, 200, 200) if isFullHd else (590, 387, 200, 200)  # (x, y, width, height)
 updateButtonCords = (1333, 340) if isFullHd else (1060,180)
 scrollCords = (1385, 433) if isFullHd else (1110,248)
+successCheckCords = (787,478,120,40) if isFullHd else (512,330,120,40)
 
 
 def capture_screen(region):
@@ -206,10 +207,6 @@ def main(counter):
                             # Второй клик на покупку
                             second_click_y = click_y + 35
                             print(f'Второй клик на координатах ({click_x + 10}, {second_click_y})')
-                            if lot not in counter:
-                                counter[lot] = 1
-                            else:
-                                counter[lot] += 1
                             pyautogui.moveTo(click_x, second_click_y,0.1)
                             time.sleep(0.1)
                             pyautogui.click(click_x, second_click_y)
@@ -220,6 +217,14 @@ def main(counter):
 
                 pyautogui.click(updateButtonCords)
                 time.sleep(0.1)
+            else:
+                isSucessBuy = check_image_on_screen('./successBuy.png',region=successCheckCords)
+                if isSucessBuy:
+                    if lot not in counter:
+                        counter[lot] = 1
+                    else:
+                        counter[lot] += 1
+                
 
 if __name__ == "__main__":
     main(counter=session_buy)
