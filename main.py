@@ -54,17 +54,17 @@ def main(counter):
     check_server_connecting = 0
     check_pda = 0
     global currentBalance
+    global updateButtonCords
     newSearchButtonCords = script.check_image_on_screen('screens/search.png', need_to_click=True,returnCords=True, region="up")
+
     if newSearchButtonCords:
         updateButtonCords = newSearchButtonCords
     else:
-        bufferCords=script.open_pda(product=product)
-        if bufferCords:
-            updateButtonCords=bufferCords
-        else: # почему то если пда не открыт, то возвращает false
-            updateButtonCords=script.check_image_on_screen('screens/search.png', need_to_click=True,returnCords=True, region="up")
+        updateButtonCords=script.check_image_on_screen('screens/search.png', need_to_click=True,returnCords=True, region="up")
+        # почему то если пда не открыт, то возвращает false
+            
     # пда открыт
-    currentBalance = script.getBalance()
+    currentBalance = script.getBalance() # на ноуте не работает
     while True:
         check_server_connecting += 1
         current_price = 0
