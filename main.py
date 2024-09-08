@@ -53,6 +53,7 @@ def main(counter):
     just_counter = 0
     check_server_connecting = 0
     check_pda = 0
+    script.reopen_pda(product=product)
     global currentBalance
     newSearchButtonCords = script.check_image_on_screen('screens/search.png', need_to_click=True,returnCords=True, region="up")
     if newSearchButtonCords:
@@ -65,12 +66,25 @@ def main(counter):
             updateButtonCords=script.check_image_on_screen('screens/search.png', need_to_click=True,returnCords=True, region="up")
     # пда открыт
     currentBalance = script.getBalance()
+    currentBalance = 99999
     while True:
         check_server_connecting += 1
         current_price = 0
         print(f'На текущий момент совершено: {sum(counter.values())} покупок! (Попыток купить - {just_counter})\nСтатистика - {counter} \nБаланс: {currentBalance}')
         if currentBalance < threshold_price:
-            stop()
+            fixer_counter = 0
+            value_fixed = False
+            while fixer_counter != 100:
+                currentBalance = script.getBalance()
+                if currentBalance > threshold_price:
+                    value_fixed = True
+                    fixer_counter = 100
+                else:
+                    fixer_counter += 1
+            if fixer_counter == 100 and value_fixed is False:
+                stop()
+            else:
+                continue
 
         if check_server_connecting >= 150:
             need_to_connect = True
@@ -83,7 +97,7 @@ def main(counter):
             if keyboard.is_pressed('f7'):
                 stop()
                 break
-            if check_pda >= 10:
+            if check_pda >= 50:
                 need_pda = True
                 while need_pda is True:
                     need_pda = script.reopen_pda(product=product)
