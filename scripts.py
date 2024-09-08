@@ -7,9 +7,10 @@ import keyboard
 import time
 from dotenv import load_dotenv
 import os
-
+from datetime import datetime
 # Получаем размеры экрана
 screen_width, screen_height = pyautogui.size()
+start_time = datetime.now()
 
 areas = {
     "fullscreen": None,
@@ -68,12 +69,12 @@ def find_lots_coordinates(image):
     return lot_coordinates
 
 
-def check_image_on_screen(image_path, region=None, need_to_click=True, callback=None):
+def check_image_on_screen(image_path, region=None, need_to_click=True, returnCords=False):
     """
     :param image_path: Путь до картинки
     :param region: Регион поиска
     :param need_to_click: Необходимо ли нажать
-    :param callback:
+    :param callback: True или False, если tru то возвращает текущие кординаты найденого изображения
     :return: True/False
     Регионы поиска - up, down, left, right, center, fullscreen
     """
@@ -113,28 +114,32 @@ def check_image_on_screen(image_path, region=None, need_to_click=True, callback=
             # Нажимаем на центр изображения
             if need_to_click:
                 pyautogui.click(center_x, center_y)  # Клик по центру изображения
-            # if callback is not None:
-            #     callback(center_x, center_y)  # Вызываем коллбэк с координатами
+            if returnCords:
+                return (center_x, center_y)
             return True
     return False
-
-
 
 def open_pda(product:str):
     print(f'ПДА не открыт, открываю')
     keyboard.send('p')
     time.sleep(1)
+    check_image_on_screen('screens/auction_type_1.png', need_to_click=True)
+    time.sleep(0.5)
     if check_image_on_screen('screens/input_search.png', need_to_click=True):
         pyautogui.click()
         time.sleep(2)
         keyboard.write(text=product)
         time.sleep(0.5)
-        check_image_on_screen('screens/search.png', need_to_click=True)
+        newSearchCords = check_image_on_screen('screens/search.png', need_to_click=True, returnCords=True, region="up")
         time.sleep(0.5)
         check_image_on_screen('screens/filter_button.png', need_to_click=True)
         time.sleep(1)
         check_image_on_screen('screens/filter_button.png', need_to_click=True)
         time.sleep(0.5)
+        if newSearchCords:
+            return newSearchCords
+        else:
+            return False
 
 def connect_to_server(do_login=False):
     if do_login:
@@ -160,11 +165,20 @@ def calcProfit(session_buy, sell_price):
     # Профит в процентах
     profit_percentage = ((sell_price - average_buy_price) / average_buy_price) * 100 if average_buy_price > 0 else 0
 
+    end_time = datetime.now()
+    elapsed_time = (end_time - start_time).total_seconds() / 3600
+
+    purchase_speed = total_quantity / elapsed_time if elapsed_time > 0 else 0
+    purchase_speed = round(purchase_speed)  # Округление до целого числа
+
     # Вывод результатов
     print(f"Суммарная затрата: {total_cost}")
     print(f"Суммарная выручка: {total_revenue}")
     print(f"Профит в %: {profit_percentage:.2f}%")
     print(f"Средняя цена закупок: {average_buy_price:.2f}")
+    print(f"Скорость покупки: {purchase_speed} предметов в час")
+
+
 
 def reconnecting():
     print(f'Проверка нахождения на сервере')
