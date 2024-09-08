@@ -14,13 +14,11 @@ start_time = datetime.now()
 
 areas = {
     "fullscreen": None,
-    "up": (0, 0, screen_width, int(screen_height * 0.5)),
-    "down": (0, int(screen_height * 0.5), screen_width, screen_height),
-    "left": (0, 0, int(screen_width * 0.5), screen_height),
-    "right": (int(screen_width * 0.5), 0, screen_width, screen_height),
-    "center": (
-        int(screen_width * 0.2), int(screen_height * 0.2),
-        int(screen_width * 0.6), int(screen_height * 0.6)),
+    "up": None,
+    "down": None,
+    "left": None,
+    "right": None,
+    "center": None
 }
 
 def capture_screen(region):
@@ -131,14 +129,15 @@ def open_pda(product:str):
         time.sleep(0.5)
         newSearchCords = check_image_on_screen('screens/search.png', need_to_click=True, returnCords=True)
         time.sleep(0.5)
-        filterButtonCords = check_image_on_screen('screens/filter_button.png', need_to_click=True, returnCords=True)
-        time.sleep(1)
-        pyautogui.click(filterButtonCords)
-        time.sleep(0.5)
+        good_filter = False
+        while good_filter is not True:
+            check_image_on_screen('screens/filter_button.png', need_to_click=True)
+            time.sleep(0.5)
+            check_image_on_screen('screens/filter_button.png', need_to_click=True)
+            good_filter = check_image_on_screen('screens/test_find_filter.png', need_to_click=False)
         if newSearchCords:
             return newSearchCords
-        else:
-            return False
+    return False
 
 def connect_to_server(do_login=False):
     if do_login:
@@ -197,7 +196,12 @@ def reconnecting():
 
 def reopen_pda(product):
     if check_image_on_screen('screens/auction_type_2.png', need_to_click=False) is False:
-        print('Хотелось бы открыть ПДА')
+        open_pda(product=product)
+        return True
+    print('ПДА открыт, проверяю предмет для покупки')
+    if check_image_on_screen('screens/input_search.png', need_to_click=False) is True:
+        keyboard.send('escape')
+        print('Поле для ввода пустое!\n Переоткрываю...')
         open_pda(product=product)
         return True
     return False
@@ -236,14 +240,19 @@ def extract_numbers_from_image(image):
     numbers = ''.join(filter(str.isdigit, detected_text))
     if len(numbers) > 2:
         numbers = numbers[1:-2]  # Убираем первую и последнюю цифру
-       
+
     return numbers
 
 def getBalance():
-    balanceCords = check_image_on_screen('screens/balance.png', returnCords=True, region="down")
-    screenshot = capture_screen(region=((int(balanceCords[0]+23),int(balanceCords[1]-15),150,30)))
-    screenshot_np = np.array(screenshot)
+    balanceCords = check_image_on_screen('screens/balance.png',returnCords=True, region="down")
+    if type(balanceCords) is not bool:
+        screenshot = capture_screen(region=((int(balanceCords[0]+23),int(balanceCords[1]-15),150,30)))
+        screenshot_np = np.array(screenshot)
 
-    # Преобразуем цветовую схему из RGB в BGR
-    screenshot_bgr = cv2.cvtColor(screenshot_np, cv2.COLOR_RGB2BGR)
-    return int(extract_numbers_from_image(screenshot_bgr))
+        # Преобразуем цветовую схему из RGB в BGR
+        screenshot_bgr = cv2.cvtColor(screenshot_np, cv2.COLOR_RGB2BGR)
+        try:
+            return int(extract_numbers_from_image(screenshot_bgr))
+        except ValueError:
+            return 999999
+    return 999999
