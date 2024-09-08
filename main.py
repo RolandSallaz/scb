@@ -112,7 +112,7 @@ def main(counter):
             print(f"Найдено лотов: {len(lots)}")
             isOkOnScreen = script.check_image_on_screen('screens/ok.png', okRegion)
             if not isOkOnScreen:
-                if len(enumerate(lots)) <= 1:  # Если найдено 1 или меньше лотов
+                if len(lots) < 1:  # Если найдено 1 или меньше лотов
                     # Перемещаем мышь в указанные координаты
                     pyautogui.moveTo(scrollCords)
                     time.sleep(0.1)  # Небольшая задержка
