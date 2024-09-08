@@ -53,16 +53,25 @@ def main(counter):
     just_counter = 0
     check_server_connecting = 0
     check_pda = 0
+    global currentBalance
     newSearchButtonCords = script.check_image_on_screen('screens/search.png', need_to_click=True,returnCords=True, region="up")
     if newSearchButtonCords:
         updateButtonCords = newSearchButtonCords
     else:
-        updateButtonCords = script.open_pda(product=product)
-
+        bufferCords=script.open_pda(product=product)
+        if bufferCords:
+            updateButtonCords=bufferCords
+        else: # почему то если пда не открыт, то возвращает false
+            updateButtonCords=script.check_image_on_screen('screens/search.png', need_to_click=True,returnCords=True, region="up")
+    # пда открыт
+    currentBalance = script.getBalance()
     while True:
         check_server_connecting += 1
         current_price = 0
-        print(f'На текущий момент совершено: {sum(counter.values())} покупок! (Попыток купить - {just_counter})\nСтатистика - {counter}')
+        print(f'На текущий момент совершено: {sum(counter.values())} покупок! (Попыток купить - {just_counter})\nСтатистика - {counter} \nБаланс: {currentBalance}')
+        if currentBalance < threshold_price:
+            stop()
+
         if check_server_connecting >= 150:
             need_to_connect = True
             while need_to_connect is True:
@@ -133,6 +142,7 @@ def main(counter):
                         counter[current_price] = 1
                     else:
                         counter[current_price] += 1
+                    currentBalance -= current_price
                     keyboard.send('escape')
                 elif script.check_image_on_screen('screens/error_buy.png', need_to_click=False, region="center"):
                     keyboard.send('escape')

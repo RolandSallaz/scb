@@ -23,7 +23,6 @@ areas = {
         int(screen_width * 0.6), int(screen_height * 0.6)),
 }
 
-
 def capture_screen(region):
     screenshot = pyautogui.screenshot(region=region)
     screenshot = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
@@ -202,3 +201,51 @@ def reopen_pda(product):
         open_pda(product=product)
         return True
     return False
+
+def preprocess_image(image):
+    # Преобразуем изображение в оттенки серого
+    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    
+    # Применяем размытие для уменьшения шума
+    blurred_image = cv2.GaussianBlur(gray_image, (5, 5), 0)
+    
+    # Применяем выравнивание гистограммы с использованием CLAHE для улучшения контрастности
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+    enhanced_image = clahe.apply(blurred_image)
+    
+    # Применяем адаптивную бинаризацию без инверсии
+    thresh_image = cv2.adaptiveThreshold(
+        enhanced_image, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+    
+    return thresh_image
+
+def extract_numbers_from_image(image):
+    # Предварительная обработка изображения
+    processed_image = preprocess_image(image)
+    
+    # Устанавливаем конфигурацию для pytesseract
+    custom_config = r'--oem 3 --psm 6'
+    
+    # Используем pytesseract для извлечения текста
+    detected_text = pytesseract.image_to_string(processed_image, config=custom_config)
+    
+    # Удаляем лишние символы с помощью регулярных выражений, оставляем только цифры
+    detected_text = re.sub(r'[^0-9р]', '', detected_text)
+    
+    # Извлекаем только цифры
+    numbers = ''.join(filter(str.isdigit, detected_text))
+    
+    # Дополнительная проверка и удаление лишних символов в конце
+    if numbers and numbers[-1] == '6':  # Условие, чтобы проверить, если последний символ "6"
+        numbers = numbers[:-1]  # Удаляем последнюю цифру, если это "6"
+    
+    return numbers
+
+def getBalance():
+    balanceCords = check_image_on_screen('screens/balance.png',returnCords=True, region="down")
+    screenshot = capture_screen(region=((int(balanceCords[0]+23),int(balanceCords[1]-15),150,30)))
+    screenshot_np = np.array(screenshot)
+
+    # Преобразуем цветовую схему из RGB в BGR
+    screenshot_bgr = cv2.cvtColor(screenshot_np, cv2.COLOR_RGB2BGR)
+    return int(extract_numbers_from_image(screenshot_bgr))
