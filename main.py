@@ -62,7 +62,11 @@ def main(counter):
         # почему то если пда не открыт, то возвращает false
             
     # пда открыт
-    currentBalance = script.getBalance() # на ноуте
+    currentBalance=0
+    if isFullHd:
+        currentBalance = script.getBalance() # на ноуте
+    else:
+        currentBalance = 6000000
     while True:
         check_server_connecting += 1
         current_price = 0
