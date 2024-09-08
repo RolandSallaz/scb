@@ -230,19 +230,17 @@ def extract_numbers_from_image(image):
     detected_text = pytesseract.image_to_string(processed_image, config=custom_config)
     
     # Удаляем лишние символы с помощью регулярных выражений, оставляем только цифры
-    detected_text = re.sub(r'[^0-9р]', '', detected_text)
+    detected_text = re.sub(r'[^0-9]', '', detected_text)  # Оставляем только цифры
     
     # Извлекаем только цифры
     numbers = ''.join(filter(str.isdigit, detected_text))
-    
-    # Дополнительная проверка и удаление лишних символов в конце
-    if numbers and numbers[-1] == '6':  # Условие, чтобы проверить, если последний символ "6"
-        numbers = numbers[:-1]  # Удаляем последнюю цифру, если это "6"
-    
+    if len(numbers) > 2:
+        numbers = numbers[1:-2]  # Убираем первую и последнюю цифру
+       
     return numbers
 
 def getBalance():
-    balanceCords = check_image_on_screen('screens/balance.png',returnCords=True, region="down")
+    balanceCords = check_image_on_screen('screens/balance.png', returnCords=True, region="down")
     screenshot = capture_screen(region=((int(balanceCords[0]+23),int(balanceCords[1]-15),150,30)))
     screenshot_np = np.array(screenshot)
 

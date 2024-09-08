@@ -27,12 +27,10 @@ isFullHd = pyautogui.size().height == 1080
 # Координаты области экрана для сканирования (x, y, ширина, высота)
 scan_region = (1253, 360, 110, 300) if isFullHd else (975, 229, 110, 350)  # Пример координат
 okRegion = (862, 530, 200, 200) if isFullHd else (590, 387, 200, 200)  # (x, y, width, height)
-updateButtonCords = None
 scrollCords = (1385, 433) if isFullHd else (1110,248)
 successCheckCords = (787,478,120,40) if isFullHd else (512,330,120,40)
 window_title = "STALCRAFT"
 windows = gw.getWindowsWithTitle(window_title)
-currentBalance=None
 
 if windows:
     # Выбираем первое найденное окно
@@ -53,18 +51,18 @@ def main(counter):
     just_counter = 0
     check_server_connecting = 0
     check_pda = 0
-    global currentBalance
-    global updateButtonCords
+    currentBalance=None
+    updateButtonCords = None
     newSearchButtonCords = script.check_image_on_screen('screens/search.png', need_to_click=True,returnCords=True, region="up")
 
     if newSearchButtonCords:
         updateButtonCords = newSearchButtonCords
     else:
-        updateButtonCords=script.check_image_on_screen('screens/search.png', need_to_click=True,returnCords=True, region="up")
+        updateButtonCords = script.open_pda(product=product)
         # почему то если пда не открыт, то возвращает false
             
     # пда открыт
-    currentBalance = script.getBalance() # на ноуте не работает
+    currentBalance = script.getBalance() # на ноуте
     while True:
         check_server_connecting += 1
         current_price = 0
@@ -135,6 +133,8 @@ def main(counter):
                 else:
                     print('Координаты не найдены для данного лота')
 
+                pyautogui.click(updateButtonCords)
+                time.sleep(0.5)
                 pyautogui.click(updateButtonCords)
                 time.sleep(0.1)
                 if script.check_image_on_screen('screens/success_buy.png', need_to_click=False, region="center"):
