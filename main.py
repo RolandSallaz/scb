@@ -8,7 +8,8 @@ import time
 from dotenv import load_dotenv
 import os
 import scripts as script
-
+import pygetwindow as gw
+from datetime import datetime
 # Загрузка переменных из .env файла
 load_dotenv()
 
@@ -211,7 +212,7 @@ def main(counter):
                     # Прокручиваем страницу вниз
                     pyautogui.scroll(-300)  # Прокрутка вниз на 300 пикселей
                     time.sleep(0.1)  # Задержка перед следующей итерацией
-                    # continue  # Переходим к следующей итерации цикла
+                    continue  # Переходим к следующей итерации цикла
 
                 if lot_coordinates:  # Проверка на наличие координат
                     # Сортируем координаты по y
