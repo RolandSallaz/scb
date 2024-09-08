@@ -65,8 +65,8 @@ def main(counter):
         else: # почему то если пда не открыт, то возвращает false
             updateButtonCords=script.check_image_on_screen('screens/search.png', need_to_click=True,returnCords=True, region="up")
     # пда открыт
-    currentBalance = script.getBalance()
-    currentBalance = 99999
+    # currentBalance = script.getBalance()
+    currentBalance = 9999999999
     while True:
         check_server_connecting += 1
         current_price = 0
@@ -112,7 +112,7 @@ def main(counter):
             print(f"Найдено лотов: {len(lots)}")
             isOkOnScreen = script.check_image_on_screen('screens/ok.png', okRegion)
             if not isOkOnScreen:
-                if len(lots) <= 1:  # Если найдено 1 или меньше лотов
+                if len(lots) < 1:  # Если найдено 1 или меньше лотов
                     # Перемещаем мышь в указанные координаты
                     pyautogui.moveTo(scrollCords)
                     time.sleep(0.1)  # Небольшая задержка

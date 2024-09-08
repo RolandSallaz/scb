@@ -199,7 +199,7 @@ def reopen_pda(product):
         open_pda(product=product)
         return True
     print('ПДА открыт, проверяю предмет для покупки')
-    if check_image_on_screen('screens/empty_field.png', need_to_click=False) is True:
+    if check_image_on_screen('screens/input_search.png.png', need_to_click=False) is True:
         keyboard.send('escape')
         print('Поле для ввода пустое!\n Переоткрываю...')
         open_pda(product=product)
