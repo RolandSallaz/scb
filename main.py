@@ -53,7 +53,7 @@ def main(counter):
     check_pda = 0
     currentBalance=None
     updateButtonCords = None
-    newSearchButtonCords = script.check_image_on_screen('screens/search.png', need_to_click=True,returnCords=True, region="up")
+    newSearchButtonCords = script.check_image_on_screen('screens/search.png', need_to_click=True,returnCords=True)
 
     if newSearchButtonCords:
         updateButtonCords = newSearchButtonCords

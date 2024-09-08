@@ -129,7 +129,7 @@ def open_pda(product:str):
         time.sleep(2)
         keyboard.write(text=product)
         time.sleep(0.5)
-        newSearchCords = check_image_on_screen('screens/search.png', need_to_click=True, returnCords=True, region="up")
+        newSearchCords = check_image_on_screen('screens/search.png', need_to_click=True, returnCords=True)
         time.sleep(0.5)
         filterButtonCords = check_image_on_screen('screens/filter_button.png', need_to_click=True, returnCords=True)
         time.sleep(1)
