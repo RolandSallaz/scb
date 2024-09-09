@@ -22,7 +22,7 @@ sell_price = int(os.getenv('SELL_PRICE'))
 product = os.getenv('ITEM')
 minBuyPrice = 19000
 resale_count = int(os.getenv('RESALE_COUNT', 10)) #10 по умолчанию, это переменная, которая будет отвечать за перепродажу при покупке заданого количества
-resale_price = int(os.getenv('RESALE_PRICE'))
+resale_price = (resale_count * sell_price) - 1
 resale_image = os.getenv('RESALE_IMAGE')
 is_standalone = os.getenv('IS_STANDALONE', 'False').lower() in ('true', '1', 't')  #Автономный ли ботик
 
