@@ -120,6 +120,8 @@ def check_image_on_screen(image_path, region=None, need_to_click=True, returnCor
 
 def open_pda(product:str):
     print(f'ПДА не открыт, открываю')
+    check_image_on_screen('screens/exit_bp.png', need_to_click=True)
+    time.sleep(1)
     keyboard.send('p')
     time.sleep(1)
     check_image_on_screen('screens/auction_type_1.png', need_to_click=True)
