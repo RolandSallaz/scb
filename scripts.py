@@ -110,6 +110,8 @@ def check_image_on_screen(image_path, region=None, need_to_click=True, returnCor
 
             # Нажимаем на центр изображения
             if need_to_click:
+                pyautogui.moveTo(center_x, center_y)  # Клик по центру изображения
+                time.sleep(0.1)
                 pyautogui.click(center_x, center_y)  # Клик по центру изображения
             if returnCords:
                 return (center_x, center_y)
@@ -256,3 +258,62 @@ def getBalance():
         except ValueError:
             return 999999
     return 999999
+
+def receiveMail():
+    keyboard.send('escape')
+    time.sleep(2)
+    check_image_on_screen('screens/mail_icon.png', need_to_click=True)
+    time.sleep(2)
+    check_image_on_screen('screens/select_all.png', need_to_click=True)
+    time.sleep(2)
+    check_image_on_screen('screens/receive_all_selected.png', need_to_click=True)
+    time.sleep(30)
+    check_image_on_screen('screens/continue.png', need_to_click=True)
+    time.sleep(2)
+    check_image_on_screen('screens/delete_received_mail.png', need_to_click=True)
+    time.sleep(2)
+    check_image_on_screen('screens/continue.png', need_to_click=True)
+    time.sleep(2)
+    keyboard.send('escape')
+    time.sleep(2)
+
+def startResale(itemImage, sell_price):
+    # сделать чек, что пда открыт и закрывать его
+    keyboard.send('escape')
+    time.sleep(2)
+    # Получаем почту
+    receiveMail()
+    # начинаем продажу
+    keyboard.send('f')
+    time.sleep(2)
+    check_image_on_screen('screens/auction_dialog.png', need_to_click=True)
+    time.sleep(2)
+    autiction_button = check_image_on_screen('screens/auction_window.png', need_to_click=False, returnCords=True)
+    if autiction_button is not False: #Если окно с аукционом открыто
+        resaleItem = check_image_on_screen(itemImage, returnCords=True)
+        pyautogui.keyDown('shift')
+        # Кликаем по координатам (x, y)
+        pyautogui.click(resaleItem)  # Замените на нужные координаты
+        # Отпускаем клавишу Shift
+        pyautogui.keyUp('shift')
+        time.sleep(0.5)
+        # устанавливаем цену продажи
+        check_image_on_screen('screens/auction_sell_price.png', need_to_click=True)
+        keyboard.write(str(sell_price))
+        time.sleep(2)
+        check_image_on_screen('screens/auction_start_price.png', need_to_click=True)
+        keyboard.write(str(sell_price - 1))
+        time.sleep(2)
+        check_image_on_screen('screens/send_to_auction.png', need_to_click=True)
+        time.sleep(2)
+        #закрываем уведомление и окно аукциона
+        keyboard.send("escape")
+        time.sleep(2)  
+        keyboard.send("escape")
+        time.sleep(2)  
+
+
+def stop(session_buy, sell_price):
+    print(f"Скрипт остановлен. ")
+    calcProfit(session_buy, sell_price)
+    os._exit(0)  # Завершает выполнение скрипта

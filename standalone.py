@@ -8,46 +8,13 @@ import time
 from dotenv import load_dotenv
 import os
 import scripts as script
-import standalone
 import pygetwindow as gw
 from datetime import datetime
-# Загрузка переменных из .env файла
-load_dotenv()
-
-# Укажите путь к Tesseract, если он не добавлен в PATH
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-session_buy = {}
-threshold_price = int(os.getenv('PRICE'))  # Пороговая цена для покупки
-sell_price = int(os.getenv('SELL_PRICE'))
-product = os.getenv('ITEM')
-minBuyPrice = 19000
-resale_count = int(os.getenv('RESALE_COUNT', 10)) #10 по умолчанию, это переменная, которая будет отвечать за перепродажу при покупке заданого количества
-resale_price = int(os.getenv('RESALE_PRICE'))
-resale_image = os.getenv('RESALE_IMAGE')
-is_standalone = os.getenv('IS_STANDALONE', 'False').lower() in ('true', '1', 't')  #Автономный ли ботик
-
-isFullHd = pyautogui.size().height == 1080
-# Координаты области экрана для сканирования (x, y, ширина, высота)
-scan_region = (1253, 370, 110, 300) if isFullHd else (975, 229, 110, 350)  # Пример координат
-okRegion = (862, 530, 200, 200) if isFullHd else (590, 387, 200, 200)  # (x, y, width, height)
-updateButtonCords = None
-scrollCords = (1385, 433) if isFullHd else (1110,248)
-successCheckCords = (787,478,120,40) if isFullHd else (512,330,120,40)
-window_title = "STALCRAFT"
-windows = gw.getWindowsWithTitle(window_title)
-currentBalance=None
-
-if windows:
-    # Выбираем первое найденное окно
-    window = windows[0]
-
-    # Разворачиваем и активируем окно
-    window.activate()  # Активировать окно
-else:
-    print("Окно не найдено.")
+from main import product,sell_price, scan_region,okRegion,threshold_price,minBuyPrice,scrollCords,resale_image,resale_price
 
 
-def main(counter):
+def start():
+    counter = {}
     just_counter = 0
     check_server_connecting = 0
     check_pda = 0
@@ -66,6 +33,12 @@ def main(counter):
     # currentBalance = script.getBalance()
     currentBalance = 9999999999
     while True:
+        total_purchases = sum(counter.values())
+        
+        if total_purchases >= 10:
+            script.startResale(itemImage=resale_image, sell_price=resale_price)
+            return  # Выход из функции после вызова функции, если это необходимо
+
         check_server_connecting += 1
         current_price = 0
         print(f'На текущий момент совершено: {sum(counter.values())} покупок! (Попыток купить - {just_counter})\nСтатистика - {counter} \nБаланс: {currentBalance}')
@@ -93,7 +66,7 @@ def main(counter):
         else:
             check_pda += 1
             if keyboard.is_pressed('f7'):
-                script.stop(session_buy,sell_price)
+                script.stop(counter, sell_price)
                 break
             if check_pda >= 50:
                 need_pda = True
@@ -158,11 +131,3 @@ def main(counter):
                     keyboard.send('escape')
                 elif script.check_image_on_screen('screens/error_buy.png', need_to_click=False, region="center"):
                     keyboard.send('escape')
-                
-
-if __name__ == "__main__":
-    if is_standalone:
-        while True:  # Бесконечный цикл
-            standalone.start()
-    else:
-        main(counter=session_buy)
