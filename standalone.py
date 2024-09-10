@@ -10,7 +10,7 @@ import os
 import scripts as script
 import pygetwindow as gw
 from datetime import datetime
-from main import product,sell_price, scan_region,okRegion,threshold_price,minBuyPrice,scrollCords,resale_image,resale_price
+from main import product,sell_price, scan_region,okRegion,threshold_price,minBuyPrice,scrollCords,resale_image,resale_price, resale_count
 
 
 def start():
@@ -35,7 +35,7 @@ def start():
     while True:
         total_purchases = sum(counter.values())
         
-        if total_purchases >= 10:
+        if total_purchases >= resale_count:
             script.startResale(itemImage=resale_image, sell_price=resale_price)
             return  # Выход из функции после вызова функции, если это необходимо
 
