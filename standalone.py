@@ -35,7 +35,6 @@ def start():
     while script.checkScrollInLots() is True:
         return
     script.reopen_pda(product=product)
-    exit()
     while True:
         total_purchases = sum(counter.values())
         if total_purchases >= resale_count:
