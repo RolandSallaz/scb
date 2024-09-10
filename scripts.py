@@ -66,7 +66,7 @@ def find_lots_coordinates(image):
     return lot_coordinates
 
 
-def check_image_on_screen(image_path, region=None, need_to_click=True, returnCords=False):
+def check_image_on_screen(image_path, region=None, need_to_click=True, returnCords=False, threshold=0.8):
     """
     :param image_path: Путь до картинки
     :param region: Регион поиска
@@ -90,7 +90,7 @@ def check_image_on_screen(image_path, region=None, need_to_click=True, returnCor
 
     # Поиск изображения на экране
     result = cv2.matchTemplate(screenshot, target_image, cv2.TM_CCOEFF_NORMED)
-    threshold = 0.8  # Порог для совпадения
+    
     loc = np.where(result >= threshold)
 
     # Если найдено совпадение
@@ -134,12 +134,16 @@ def open_pda(product:str):
         newSearchCords = check_image_on_screen('screens/search.png', need_to_click=True, returnCords=True)
         time.sleep(0.5)
         good_filter = False
+        filterCords = check_image_on_screen('screens/filter_button.png', need_to_click=False, returnCords=True)
+        time.sleep(0.5)
         while good_filter is not True:
-            check_image_on_screen('screens/filter_button.png', need_to_click=True)
+            pyautogui.moveTo(filterCords)
+            time.sleep(0.1)
+            pyautogui.click(filterCords)
+            time.sleep(0.1)
+            pyautogui.moveTo(x=filterCords[0]-50,y=filterCords[1]-50,duration=0.2)
             time.sleep(0.5)
-            check_image_on_screen('screens/filter_button.png', need_to_click=True)
-            time.sleep(0.5)
-            good_filter = check_image_on_screen('screens/test_find_filter.png', need_to_click=False)
+            good_filter = check_image_on_screen('screens/test_find_filter.png', need_to_click=False, threshold=1)
             time.sleep(0.5)
         if newSearchCords:
             return newSearchCords
