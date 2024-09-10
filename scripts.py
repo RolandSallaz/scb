@@ -321,12 +321,12 @@ def stop(session_buy, sell_price):
     os._exit(0)  # Завершает выполнение скрипта
     
 def isPdaOpen():
-    return check_image_on_screen('screens/search', need_to_click=False)
+    return check_image_on_screen('screens/search.png', need_to_click=False)
 
 def checkScrollInLots():
     if isPdaOpen():
-        updateCords = check_image_on_screen('screens/my_lots',need_to_click=True, returnCords=True)
-        while check_image_on_screen('screens/scroll'):
+        updateCords = check_image_on_screen('screens/my_lots.png',need_to_click=True, returnCords=True)
+        while check_image_on_screen('screens/scroll.png'):
             pyautogui.click(updateCords)
             time.sleep(0.2)
         keyboard.send('escape')
