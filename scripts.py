@@ -269,7 +269,7 @@ def receiveMail():
     check_image_on_screen('screens/select_all.png', need_to_click=True)
     time.sleep(2)
     check_image_on_screen('screens/receive_all_selected.png', need_to_click=True)
-    time.sleep(30)
+    time.sleep(15)
     check_image_on_screen('screens/continue.png', need_to_click=True)
     time.sleep(2)
     check_image_on_screen('screens/delete_received_mail.png', need_to_click=True)
