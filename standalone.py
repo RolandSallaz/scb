@@ -18,7 +18,7 @@ def start():
     just_counter = 0
     check_server_connecting = 0
     check_pda = 0
-    script.reopen_pda(product=product)
+
     global currentBalance
     newSearchButtonCords = script.check_image_on_screen('screens/search.png', need_to_click=True,returnCords=True, region="up")
     if newSearchButtonCords:
@@ -32,13 +32,14 @@ def start():
     # пда открыт
     # currentBalance = script.getBalance()
     currentBalance = 9999999999
+    while script.checkScrollInLots() is True:
+        return
+    script.reopen_pda(product=product)
     while True:
         total_purchases = sum(counter.values())
-        
         if total_purchases >= resale_count:
             script.startResale(itemImage=resale_image, sell_price=resale_price)
             return  # Выход из функции после вызова функции, если это необходимо
-        script.checkScrollInLots()
         check_server_connecting += 1
         current_price = 0
         print(f'На текущий момент совершено: {sum(counter.values())} покупок! (Попыток купить - {just_counter})\nСтатистика - {counter} \nБаланс: {currentBalance}')

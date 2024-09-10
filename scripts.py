@@ -333,14 +333,15 @@ def checkScrollInLots():
             if checkScroll:
                 pyautogui.click(updateCords)
                 time.sleep(1)
+                return True
             else:
                 keyboard.send('escape')
                 time.sleep(1)
-                return True
+                return False
     else:
         keyboard.send('escape')
         time.sleep(1)
         keyboard.send('p')
         time.sleep(1)
-        checkScrollInLots()  # Перезапуск функции
+        return True
         
