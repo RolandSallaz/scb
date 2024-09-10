@@ -111,7 +111,7 @@ def check_image_on_screen(image_path, region=None, need_to_click=True, returnCor
             # Нажимаем на центр изображения
             if need_to_click:
                 pyautogui.moveTo(center_x, center_y)  # Клик по центру изображения
-                time.sleep(0.1)
+                time.sleep(0.15)
                 pyautogui.click(center_x, center_y)  # Клик по центру изображения
             if returnCords:
                 return (center_x, center_y)
@@ -138,7 +138,9 @@ def open_pda(product:str):
             check_image_on_screen('screens/filter_button.png', need_to_click=True)
             time.sleep(0.5)
             check_image_on_screen('screens/filter_button.png', need_to_click=True)
+            time.sleep(0.5)
             good_filter = check_image_on_screen('screens/test_find_filter.png', need_to_click=False)
+            time.sleep(0.5)
         if newSearchCords:
             return newSearchCords
     return False
