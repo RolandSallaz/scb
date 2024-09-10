@@ -327,12 +327,16 @@ def checkScrollInLots():
     if isPdaOpen():
         updateCords = check_image_on_screen('screens/my_lots.png',need_to_click=True, returnCords=True)
         time.sleep(1)
-        while check_image_on_screen('screens/scroll.png'):
-            pyautogui.click(updateCords)
-            time.sleep(0.2)
-        keyboard.send('escape')
-        time.sleep(1)
-        return True
+        while True:
+            checkScroll = check_image_on_screen('screens/scroll.png',need_to_click=False)
+            time.sleep(1)
+            if checkScroll:
+                pyautogui.click(updateCords)
+                time.sleep(1)
+            else:
+                keyboard.send('escape')
+                time.sleep(1)
+                return True
     else:
         keyboard.send('escape')
         time.sleep(1)
