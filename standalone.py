@@ -38,7 +38,7 @@ def start():
         if total_purchases >= resale_count:
             script.startResale(itemImage=resale_image, sell_price=resale_price)
             return  # Выход из функции после вызова функции, если это необходимо
-
+        script.checkScrollInLots()
         check_server_connecting += 1
         current_price = 0
         print(f'На текущий момент совершено: {sum(counter.values())} покупок! (Попыток купить - {just_counter})\nСтатистика - {counter} \nБаланс: {currentBalance}')
