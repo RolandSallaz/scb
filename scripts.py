@@ -143,7 +143,7 @@ def open_pda(product:str):
             time.sleep(0.1)
             pyautogui.moveTo(x=filterCords[0]-50,y=filterCords[1]-50,duration=0.2)
             time.sleep(0.5)
-            good_filter = check_image_on_screen('screens/test_find_filter.png', need_to_click=False)
+            good_filter = check_image_on_screen('screens/test_find_filter.png', need_to_click=False, threshold=0.9)
             time.sleep(0.5)
         if newSearchCords:
             return newSearchCords
