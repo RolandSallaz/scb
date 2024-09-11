@@ -96,7 +96,7 @@ def start():
                 else:
                     print('Координаты не найдены для данного лота')
 
-                pyautogui.click(updateButtonCords)
+                script.check_image_on_screen('screens/search.png', need_to_click=True,returnCords=True, region="up")
                 time.sleep(0.1)
                 if script.check_image_on_screen('screens/success_buy.png', need_to_click=False, region="center"):
                     if current_price not in counter:
