@@ -321,15 +321,16 @@ def checkScrollInLots(): #Else значит скрола нет и можно п
         time.sleep(1)
         isScroll = check_image_on_screen('screens/scroll.png',need_to_click=False)
         noScroll = check_image_on_screen('screens/noScroll.png',need_to_click=False)
-        if isScroll: #Нужно 2 проверки, чтобы пинга успевала прогрузиться
-            click(updateCords[0],updateCords[1])
-            return True
-        elif noScroll and isScroll is False:
-            keyboard.send('escape')
-            return False
-        else:
-            #загрузка
-            return True
+        while True:
+            if isScroll: #Нужно 2 проверки, чтобы пинга успевала прогрузиться
+                click(updateCords[0],updateCords[1])
+                return True
+            elif noScroll and isScroll is False:
+                keyboard.send('escape')
+                return False
+            else:
+                #загрузка
+                return True
     else:
         keyboard.send('escape')
         time.sleep(0.2)
