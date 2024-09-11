@@ -315,13 +315,13 @@ def stop(session_buy, sell_price):
 def isPdaOpen():
     return check_image_on_screen('screens/search.png', need_to_click=False)
 
-def checkScrollInLots():
+def checkScrollInLots(): #Else значит скрола нет и можно продолать код
     if isPdaOpen():
         updateCords = waitUntilImage('screens/my_lots.png',need_to_click=True, returnCords=True)
         while True:
             checkScroll = check_image_on_screen('screens/scroll.png',need_to_click=False)
             noScroll = check_image_on_screen('screens/noScroll.png',need_to_click=False)
-            if checkScroll:
+            if checkScroll: #Нужно 2 проверки, чтобы пинга успевала прогрузиться
                 click(updateCords[0],updateCords[1])
                 return True
             elif noScroll:
