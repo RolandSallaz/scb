@@ -25,7 +25,7 @@ resale_count = int(os.getenv('RESALE_COUNT', 10)) #10 по умолчанию, �
 resale_price = (resale_count * sell_price) - 1
 resale_image = os.getenv('RESALE_IMAGE')
 is_standalone = os.getenv('IS_STANDALONE', 'False').lower() in ('true', '1', 't')  #Автономный ли ботик
-currentBalance= int(os.getenv('BALANCE',10000000))
+balance= int(os.getenv('BALANCE',10000000))
 
 isFullHd = pyautogui.size().height == 1080
 # Координаты области экрана для сканирования (x, y, ширина, высота)
@@ -52,7 +52,7 @@ def main(counter):
     check_server_connecting = 0
     check_pda = 0
     script.reopen_pda(product=product)
-    global currentBalance
+    currentBalance = balance
     newSearchButtonCords = script.check_image_on_screen('screens/search.png', need_to_click=True,returnCords=True, region="up")
     if newSearchButtonCords:
         updateButtonCords = newSearchButtonCords
