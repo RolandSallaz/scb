@@ -21,6 +21,11 @@ areas = {
     "center": None
 }
 
+def click(x,y):
+    pyautogui.moveTo(x=x,y=y,duration=0.1)
+    time.sleep(0.1)
+    pyautogui.click(x=x,y=y)
+
 def capture_screen(region):
     screenshot = pyautogui.screenshot(region=region)
     screenshot = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
@@ -92,7 +97,6 @@ def check_image_on_screen(image_path, region=None, need_to_click=True, returnCor
     result = cv2.matchTemplate(screenshot, target_image, cv2.TM_CCOEFF_NORMED)
     
     loc = np.where(result >= threshold)
-
     # Если найдено совпадение
     if loc[0].size > 0:
         # Получаем координаты центра найденного изображения
@@ -110,9 +114,7 @@ def check_image_on_screen(image_path, region=None, need_to_click=True, returnCor
 
             # Нажимаем на центр изображения
             if need_to_click:
-                pyautogui.moveTo(center_x, center_y)  # Клик по центру изображения
-                time.sleep(0.15)
-                pyautogui.click(center_x, center_y)  # Клик по центру изображения
+                click(center_x,center_y)
             if returnCords:
                 return (center_x, center_y)
             return True
@@ -269,56 +271,40 @@ def getBalance():
 
 def receiveMail():
     keyboard.send('escape')
-    time.sleep(2)
-    check_image_on_screen('screens/mail_icon.png', need_to_click=True)
-    time.sleep(2)
-    check_image_on_screen('screens/select_all.png', need_to_click=True)
-    time.sleep(2)
-    check_image_on_screen('screens/receive_all_selected.png', need_to_click=True)
-    time.sleep(15)
-    check_image_on_screen('screens/continue.png', need_to_click=True)
-    time.sleep(2)
-    check_image_on_screen('screens/delete_received_mail.png', need_to_click=True)
-    time.sleep(2)
-    check_image_on_screen('screens/continue.png', need_to_click=True)
-    time.sleep(2)
+    waitUntilImage('screens/mail_icon.png', need_to_click=True)
+    waitUntilImage('screens/select_all.png', need_to_click=True)
+    waitUntilImage('screens/receive_all_selected.png', need_to_click=True)
+    waitUntilImage('screens/continue.png', need_to_click=True)
+    waitUntilImage('screens/delete_received_mail.png', need_to_click=True)
+    waitUntilImage('screens/continue.png', need_to_click=True)
+    time.sleep(0.2)
     keyboard.send('escape')
-    time.sleep(2)
 
 def startResale(itemImage, sell_price):
     # сделать чек, что пда открыт и закрывать его
     keyboard.send('escape')
-    time.sleep(2)
     # Получаем почту
     receiveMail()
     # начинаем продажу
     keyboard.send('f')
-    time.sleep(2)
-    check_image_on_screen('screens/auction_dialog.png', need_to_click=True)
-    time.sleep(2)
-    autiction_button = check_image_on_screen('screens/auction_window.png', need_to_click=False, returnCords=True)
-    if autiction_button is not False: #Если окно с аукционом открыто
-        resaleItem = check_image_on_screen(itemImage, returnCords=True)
-        pyautogui.keyDown('shift')
-        # Кликаем по координатам (x, y)
-        pyautogui.click(resaleItem)  # Замените на нужные координаты
-        # Отпускаем клавишу Shift
-        pyautogui.keyUp('shift')
-        time.sleep(0.5)
-        # устанавливаем цену продажи
-        check_image_on_screen('screens/auction_sell_price.png', need_to_click=True)
-        keyboard.write(str(sell_price))
-        time.sleep(2)
-        check_image_on_screen('screens/auction_start_price.png', need_to_click=True)
-        keyboard.write(str(sell_price - 1))
-        time.sleep(2)
-        check_image_on_screen('screens/send_to_auction.png', need_to_click=True)
-        time.sleep(2)
-        #закрываем уведомление и окно аукциона
-        keyboard.send("escape")
-        time.sleep(2)  
-        keyboard.send("escape")
-        time.sleep(2)  
+    waitUntilImage('screens/auction_dialog.png', need_to_click=True)
+    waitUntilImage('screens/auction_window.png')
+    resaleItem = waitUntilImage(itemImage, returnCords=True)
+    pyautogui.keyDown('shift')
+    # Кликаем по координатам (x, y)
+    click(resaleItem[0],resaleItem[1])  # Замените на нужные координаты
+    # Отпускаем клавишу Shift
+    pyautogui.keyUp('shift')
+    # устанавливаем цену продажи
+    waitUntilImage('screens/auction_sell_price.png', need_to_click=True)
+    keyboard.write(str(sell_price))
+    time.sleep(0.2)
+    waitUntilImage('screens/auction_start_price.png', need_to_click=True)
+    keyboard.write(str(sell_price - 1))
+    waitUntilImage('screens/send_to_auction.png', need_to_click=True)
+    waitUntilImage('screens/ok.png', need_to_click=True)
+    time.sleep(0.2)
+    keyboard.send("escape")
 
 
 def stop(session_buy, sell_price):
@@ -331,23 +317,25 @@ def isPdaOpen():
 
 def checkScrollInLots():
     if isPdaOpen():
-        updateCords = check_image_on_screen('screens/my_lots.png',need_to_click=True, returnCords=True)
-        time.sleep(1)
+        updateCords = waitUntilImage('screens/my_lots.png',need_to_click=True, returnCords=True)
         while True:
             checkScroll = check_image_on_screen('screens/scroll.png',need_to_click=False)
-            time.sleep(1)
+            noScroll = check_image_on_screen('screens/noScroll.png',need_to_click=False)
             if checkScroll:
-                pyautogui.click(updateCords)
-                time.sleep(1)
+                click(updateCords[0],updateCords[1])
                 return True
-            else:
+            elif noScroll:
                 keyboard.send('escape')
-                time.sleep(1)
                 return False
     else:
         keyboard.send('escape')
-        time.sleep(1)
+        time.sleep(0.2)
         keyboard.send('p')
-        time.sleep(1)
+        time.sleep(0.2)
         return True
         
+def waitUntilImage(image_path, need_to_click=False, returnCords=False, region=None):
+    image = check_image_on_screen(image_path=image_path,need_to_click=need_to_click,returnCords=returnCords, region=region)
+    while image is False:
+        image = check_image_on_screen(image_path=image_path, need_to_click=need_to_click, returnCords=returnCords)  # Проверяем изображение снова
+    return image

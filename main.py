@@ -68,20 +68,8 @@ def main(counter):
         check_server_connecting += 1
         current_price = 0
         print(f'На текущий момент совершено: {sum(counter.values())} покупок! (Попыток купить - {just_counter})\nСтатистика - {counter} \nБаланс: {currentBalance}')
-        # if currentBalance < threshold_price:
-        #     fixer_counter = 0
-        #     value_fixed = False
-        #     while fixer_counter != 100:
-        #         currentBalance = script.getBalance()
-        #         if currentBalance > threshold_price:
-        #             value_fixed = True
-        #             fixer_counter = 100
-        #         else:
-        #             fixer_counter += 1
-        #     if fixer_counter == 100 and value_fixed is False:
-        #         stop()
-        #     else:
-        #         continue
+        if currentBalance <= threshold_price:
+            script.stop(session_buy,sell_price)
 
         if check_server_connecting >= 150:
             need_to_connect = True

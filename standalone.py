@@ -19,22 +19,12 @@ def start():
     check_server_connecting = 0
     check_pda = 0
     lastBuyed = None
-    global currentBalance
-    newSearchButtonCords = script.check_image_on_screen('screens/search.png', need_to_click=True,returnCords=True, region="up")
-    if newSearchButtonCords:
-        updateButtonCords = newSearchButtonCords
-    else:
-        bufferCords=script.open_pda(product=product)
-        if bufferCords:
-            updateButtonCords=bufferCords
-        else: # почему то если пда не открыт, то возвращает false
-            updateButtonCords=script.check_image_on_screen('screens/search.png', need_to_click=True,returnCords=True, region="up")
-    # пда открыт
-    # currentBalance = script.getBalance()
-    currentBalance = 9999999999
+    updateButtonCords=None
+    print(script.checkScrollInLots())
+    exit()
     while script.checkScrollInLots() is True:
         return
-    script.reopen_pda(product=product)
+    script.open_pda(product=product)
     while True:
         total_purchases = sum(counter.values())
         if total_purchases >= resale_count:
@@ -42,21 +32,6 @@ def start():
             return  # Выход из функции после вызова функции, если это необходимо
         check_server_connecting += 1
         current_price = 0
-        print(f'На текущий момент совершено: {sum(counter.values())} покупок! (Попыток купить - {just_counter})\nСтатистика - {counter} \nБаланс: {currentBalance}')
-        # if currentBalance < threshold_price:
-        #     fixer_counter = 0
-        #     value_fixed = False
-        #     while fixer_counter != 100:
-        #         currentBalance = script.getBalance()
-        #         if currentBalance > threshold_price:
-        #             value_fixed = True
-        #             fixer_counter = 100
-        #         else:
-        #             fixer_counter += 1
-        #     if fixer_counter == 100 and value_fixed is False:
-        #         stop()
-        #     else:
-        #         continue
 
         if check_server_connecting >= 150:
             need_to_connect = True
@@ -129,7 +104,6 @@ def start():
                         counter[current_price] = 1
                     else:
                         counter[current_price] += 1
-                    currentBalance -= current_price
                     keyboard.send('escape')
                 elif script.check_image_on_screen('screens/error_buy.png', need_to_click=False, region="center"):
                     keyboard.send('escape')
