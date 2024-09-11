@@ -317,7 +317,7 @@ def isPdaOpen():
 
 def checkScrollInLots(): #Else значит скрола нет и можно продолать код
     if isPdaOpen():
-        updateCords = waitUntilImage('screens/my_lots.png',need_to_click=True, returnCords=True)
+        updateCords = check_image_on_screen('screens/my_lots.png',need_to_click=True, returnCords=True) or check_image_on_screen('screens/search.png',need_to_click=True, returnCords=True)
         time.sleep(1)
         isScroll = check_image_on_screen('screens/scroll.png',need_to_click=False)
         noScroll = check_image_on_screen('screens/noScroll.png',need_to_click=False)
