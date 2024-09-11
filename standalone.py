@@ -20,7 +20,8 @@ def start():
     check_pda = 0
     lastBuyed = None
     updateButtonCords=None
-    if script.checkScrollInLots():
+    checkScroll = script.checkScrollInLots()
+    if checkScroll:
         return #если скролл есть, то перезапускаемся
     script.open_pda(product=product)
     while True:
