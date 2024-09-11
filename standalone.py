@@ -20,7 +20,7 @@ def start():
     check_pda = 0
     lastBuyed = None
     updateButtonCords=None
-    while script.checkScrollInLots() is True:
+    while script.checkScrollInLots():
         return
     script.open_pda(product=product)
     while True:

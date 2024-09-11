@@ -318,15 +318,17 @@ def isPdaOpen():
 def checkScrollInLots(): #Else значит скрола нет и можно продолать код
     if isPdaOpen():
         updateCords = waitUntilImage('screens/my_lots.png',need_to_click=True, returnCords=True)
-        while True:
-            checkScroll = check_image_on_screen('screens/scroll.png',need_to_click=False)
-            noScroll = check_image_on_screen('screens/noScroll.png',need_to_click=False)
-            if checkScroll: #Нужно 2 проверки, чтобы пинга успевала прогрузиться
-                click(updateCords[0],updateCords[1])
-                return True
-            elif noScroll:
-                keyboard.send('escape')
-                return False
+        isScroll = check_image_on_screen('screens/scroll.png',need_to_click=False)
+        noScroll = check_image_on_screen('screens/noScroll.png',need_to_click=False)
+        if isScroll: #Нужно 2 проверки, чтобы пинга успевала прогрузиться
+            click(updateCords[0],updateCords[1])
+            return True
+        elif noScroll:
+            keyboard.send('escape')
+            return False
+        else:
+            #загрузка
+            return True
     else:
         keyboard.send('escape')
         time.sleep(0.2)
