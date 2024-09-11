@@ -25,6 +25,7 @@ resale_count = int(os.getenv('RESALE_COUNT', 10)) #10 по умолчанию, �
 resale_price = (resale_count * sell_price) - 1
 resale_image = os.getenv('RESALE_IMAGE')
 is_standalone = os.getenv('IS_STANDALONE', 'False').lower() in ('true', '1', 't')  #Автономный ли ботик
+currentBalance= int(os.getenv('BALANCE',10000000))
 
 isFullHd = pyautogui.size().height == 1080
 # Координаты области экрана для сканирования (x, y, ширина, высота)
@@ -35,7 +36,6 @@ scrollCords = (1385, 433) if isFullHd else (1110,248)
 successCheckCords = (787,478,120,40) if isFullHd else (512,330,120,40)
 window_title = "STALCRAFT"
 windows = gw.getWindowsWithTitle(window_title)
-currentBalance=None
 
 if windows:
     # Выбираем первое найденное окно
@@ -64,7 +64,6 @@ def main(counter):
             updateButtonCords=script.check_image_on_screen('screens/search.png', need_to_click=True,returnCords=True, region="up")
     # пда открыт
     # currentBalance = script.getBalance()
-    currentBalance = 9999999999
     while True:
         check_server_connecting += 1
         current_price = 0
