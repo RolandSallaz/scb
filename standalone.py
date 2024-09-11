@@ -20,8 +20,8 @@ def start():
     check_pda = 0
     lastBuyed = None
     updateButtonCords=None
-    while script.checkScrollInLots():
-        return
+    if script.checkScrollInLots():
+        return #если скролл есть, то перезапускаемся
     script.open_pda(product=product)
     while True:
         total_purchases = sum(counter.values())
