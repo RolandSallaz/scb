@@ -27,7 +27,8 @@ def start():
     while True:
         total_purchases = sum(counter.values())
         if total_purchases >= resale_count:
-            script.startResale(itemImage=resale_image, sell_price=round(lastBuyed * 1.10 ))
+            priceByPercent=max(round(lastBuyed * 1.10), threshold_price+1)
+            script.startResale(itemImage=resale_image, sell_price=priceByPercent)
             return  # Выход из функции после вызова функции, если это необходимо
         check_server_connecting += 1
         current_price = 0
