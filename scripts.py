@@ -21,10 +21,13 @@ areas = {
     "center": None
 }
 
-def click(x,y):
-    pyautogui.moveTo(x=x,y=y,duration=0.1)
+def click(x,y, double=False):
+    pyautogui.moveTo(x=x, y=y, duration=0.1)
     time.sleep(0.1)
-    pyautogui.click(x=x,y=y)
+    if double:
+        pyautogui.doubleClick(x=x, y=y)
+    else:
+        pyautogui.click(x=x,y=y)
 
 def capture_screen(region):
     screenshot = pyautogui.screenshot(region=region)
@@ -71,7 +74,10 @@ def find_lots_coordinates(image):
     return lot_coordinates
 
 
-def check_image_on_screen(image_path, region=None, need_to_click=True, returnCords=False, threshold=0.8):
+def check_image_on_screen(image_path, region=None,
+                          need_to_click=True,
+                          returnCords=False,
+                          threshold=0.8, double=False):
     """
     :param image_path: Путь до картинки
     :param region: Регион поиска
@@ -114,7 +120,8 @@ def check_image_on_screen(image_path, region=None, need_to_click=True, returnCor
 
             # Нажимаем на центр изображения
             if need_to_click:
-                click(center_x,center_y)
+                click(center_x,center_y, double=double)
+
             if returnCords:
                 return (center_x, center_y)
             return True

@@ -99,11 +99,11 @@ def main(counter):
             if not isOkOnScreen:
                 if len(lots) < 1:  # Если найдено 1 или меньше лотов
                     # Перемещаем мышь в указанные координаты
-                    pyautogui.moveTo(scrollCords)
-                    time.sleep(0.1)  # Небольшая задержка
-                    # Прокручиваем страницу вниз
-                    pyautogui.scroll(-300)  # Прокрутка вниз на 300 пикселей
-                    time.sleep(0.1)  # Задержка перед следующей итерацией
+                    # pyautogui.moveTo(scrollCords)
+                    # time.sleep(0.1)  # Небольшая задержка
+                    # # Прокручиваем страницу вниз
+                    # pyautogui.scroll(-300)  # Прокрутка вниз на 300 пикселей
+                    # time.sleep(0.1)  # Задержка перед следующей итерацией
                     continue  # Переходим к следующей итерации цикла
 
                 if lot_coordinates:  # Проверка на наличие координат

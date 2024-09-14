@@ -14,6 +14,7 @@ from main import product,sell_price, scan_region,okRegion,threshold_price,minBuy
 
 
 def start():
+    search_button_coords = None
     counter = {}
     just_counter = 0
     check_server_connecting = 0
@@ -59,6 +60,16 @@ def start():
             print(f"Найдено лотов: {len(lots)}")
             isOkOnScreen = script.check_image_on_screen('screens/ok.png', okRegion)
             if not isOkOnScreen:
+                if search_button_coords is None:
+                    # TODO Передать в search_button_coords координаты клика
+                    script.check_image_on_screen('screens/search.png',
+                                                 need_to_click=True,
+                                                 returnCords=True,
+                                                 region="up",
+                                                 double=True)
+                else:
+                    pass
+                    #TODO клик по координатам, а не по кнопке
                 if len(lots) < 1:  # Если найдено 1 или меньше лотов
                     # Перемещаем мышь в указанные координаты
                     pyautogui.moveTo(scrollCords)
@@ -97,7 +108,7 @@ def start():
                 else:
                     print('Координаты не найдены для данного лота')
 
-                script.check_image_on_screen('screens/search.png', need_to_click=True,returnCords=True, region="up")
+
                 time.sleep(0.1)
                 if script.check_image_on_screen('screens/success_buy.png', need_to_click=False, region="center"):
                     if current_price not in counter:
