@@ -169,11 +169,15 @@ def calcProfit(session_buy, sell_price):
     # Суммарная выручка при продаже по sell_price
     total_revenue = total_quantity * sell_price
 
+    # Учет комиссии аукциона (5%)
+    auction_fee_percentage = 0.05
+    total_revenue_after_fee = total_revenue * (1 - auction_fee_percentage)
+
     # Средняя цена закупок
     average_buy_price = total_cost / total_quantity if total_quantity > 0 else 0
 
     # Профит в процентах
-    profit_percentage = ((sell_price - average_buy_price) / average_buy_price) * 100 if average_buy_price > 0 else 0
+    profit_percentage = ((total_revenue_after_fee - total_cost) / total_cost) * 100 if total_cost > 0 else 0
 
     end_time = datetime.now()
     elapsed_time = (end_time - start_time).total_seconds() / 3600
@@ -182,8 +186,9 @@ def calcProfit(session_buy, sell_price):
     purchase_speed = round(purchase_speed)  # Округление до целого числа
 
     # Вывод результатов
-    print(f"Суммарная затрата: {total_cost}")
-    print(f"Суммарная выручка: {total_revenue}")
+    print(f"Суммарная затрата: {total_cost:.2f}")
+    print(f"Суммарная выручка: {total_revenue:.2f}")
+    print(f"Выручка после комиссии: {total_revenue_after_fee:.2f}")
     print(f"Профит в %: {profit_percentage:.2f}%")
     print(f"Средняя цена закупок: {average_buy_price:.2f}")
     print(f"Скорость покупки: {purchase_speed} предметов в час")
